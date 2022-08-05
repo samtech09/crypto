@@ -106,7 +106,7 @@ func EncryptWithPassphrase(text string, passphrase string) string {
 }
 
 // DecryptWithPassphrace encrypted text with the passphrase using CFB mode
-func DecryptWithPassphrace(encrypted string, passphrase string) string {
+func DecryptWithPassphrase(encrypted string, passphrase string) string {
 	ct, _ := b64.StdEncoding.DecodeString(encrypted)
 	if len(ct) < 16 || string(ct[:8]) != "Salted__" {
 		return ""

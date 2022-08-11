@@ -32,10 +32,10 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
-	"crypto/rand"
 	b64 "encoding/base64"
-	"io"
 )
+
+var salt = []byte{21, 38, 57, 106, 39, 75, 82, 94}
 
 // // Encrypts text with the passphrase using CBC mode
 // func EncryptWithPassphrase(text string, passphrase string) string {
@@ -85,10 +85,10 @@ import (
 
 // EncryptWithPassphrase text with the passphrase using CFB mode
 func EncryptWithPassphrase(text string, passphrase string) string {
-	salt := make([]byte, 8)
-	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
-		panic(err.Error())
-	}
+	//salt := make([]byte, 8)
+	//if _, err := io.ReadFull(rand.Reader, salt); err != nil {
+	//	panic(err.Error())
+	//}
 
 	key, iv := __DeriveKeyAndIv(passphrase, string(salt))
 
@@ -102,18 +102,22 @@ func EncryptWithPassphrase(text string, passphrase string) string {
 	encrypted := make([]byte, len(pad))
 	cfb.XORKeyStream(encrypted, pad)
 
-	return b64.StdEncoding.EncodeToString([]byte("Salted__" + string(salt) + string(encrypted)))
+	//return b64.StdEncoding.EncodeToString([]byte("Salted__" + string(salt) + string(encrypted)))
+	return b64.StdEncoding.EncodeToString(encrypted)
 }
 
 // DecryptWithPassphrace encrypted text with the passphrase using CFB mode
 func DecryptWithPassphrase(encrypted string, passphrase string) string {
 	ct, _ := b64.StdEncoding.DecodeString(encrypted)
-	if len(ct) < 16 || string(ct[:8]) != "Salted__" {
+	//if len(ct) < 16 || string(ct[:8]) != "Salted__" {
+	//	return ""
+	//}
+	if len(ct) < 16 {
 		return ""
 	}
 
-	salt := ct[8:16]
-	ct = ct[16:]
+	//salt := ct[8:16]
+	//ct = ct[16:]
 	key, iv := __DeriveKeyAndIv(passphrase, string(salt))
 
 	block, err := aes.NewCipher([]byte(key))
